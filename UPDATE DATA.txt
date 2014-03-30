@@ -1,0 +1,51 @@
+----------------------------------文件内容为更新表中数据的相关操作-------------------------------
+/*
+	本文件总结了在SQL Server中如何更新数据，包括插入，删除，修改
+*/
+
+--------一、插入数据
+----1、插入单个元组
+	/*
+		使用 INSERT INTO 语句
+	*/
+	INSERT INTO <T> [(<列名>[, ... , N])]
+		VALUES (c1, c2, ... , cn)
+	/*
+		其中1、<T> 既可以是基本表，也可以是视图
+			2、[(<列名>[, ... , N])]缺省时，VALUES子句必须按基本表中列的定义顺序提供新元组
+			在每个列上的值。若[(<列名>[, ... , N])]不缺省时，<列名>的顺序可以任意，并且可以
+			仅列举部分属性，此时VALUES子句中提供的值顺序和数量应当与[(<列名>[, ... , N])]中
+			相同，[(<列名>[, ... , N])]中未列出的列，将取默认值（或为NULL）
+	*/
+----2、插入查询结果
+	INSERT INTO <T> [(<列名>[, ... , N])]
+		<查询表达式>
+	/*
+		<查询表达式>通常是一个SELECT语句。该语句对查询表达式求值，并将结果元组集插入到基本
+		表（或视图）T中。需注意，SELECT语句中查询出的列顺序必须与[(<列名>[, ... , N])]相同
+	*/
+	--例如：
+	INSERT INTO newjobs(job_desc, min_lvl, max_lvl)
+		SELECT job_desc, min_lvl, max_lvl FROM jobs
+	/*
+		注：SELECT语句中的列，也可以是常量或可求值表达式，相当于把常量的值（或表达式求出的值）
+		添加到基本表（或视图）T中。
+	*/
+	--例如：
+	INSERT INTO Cardinf(Card-no, Name, Balance)
+		SELECT Tno, Tname, 100.00
+		FROM Teachers
+		WHERE Dno = 'IE';
+		/*
+			注：1、该语句将会使得表Cardinf中每个元组的第三列（即名字为Balance的列）的值均
+				为100.00
+				2、极端情况下，SELECT子句中每一列均可以为常量，不在需要FROM子句，例：
+				INSERT INTO newjobs (job_desc, min_lvl, max_lvl)
+					SELECT 'aa', 12, 12;
+				3、如果需要批量插入数据，可以使用如下形式：
+				INSERT INTO newjobs (job_desc, min_lvl, max_lvl)
+					SELECT 'aa', 12, 12 UNION
+					SELECT 'bb', 13, 14 UNION
+					SELECT 'cc', 14, 12;
+				可以发现，只是在2的基础上，每一个SELECT子句的最后加一个UNION（最后一个不加）即可
+		*/
