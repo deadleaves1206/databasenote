@@ -1,0 +1,82 @@
+/*
+	该文件中写明了所有出现在SQL中出现的基本数据类型
+	以及一个简单创建自定义数据类型的例子
+*/
+SQL 2005
+
+bigint
+binary
+bit
+char
+cursor
+datetime
+decimal
+float
+image
+int
+money
+nchar
+ntext
+numeric
+nvarchar
+real
+smalldatetime
+smallint
+smallmoney
+sql_variant
+table
+text
+timestamp
+tinyint
+varbinary
+varchar
+uniqueidentifier
+xml
+
+SQL 2008
+
+bigint
+binary
+bit
+char
+CLR
+cursor
+date
+datetime
+datetime2
+datetimeoffset
+decimal
+float
+hierarchyid
+image
+int
+money
+nchar
+ntext
+numeric
+nvarchar
+real
+rowversion
+smalldatetime
+smallint
+smallmoney
+sql_variant
+table
+text
+time
+timestamp
+int, bigint, smallint, and tinyint (Transact-SQL)
+varbinary
+varchar
+uniqueidentifier
+xml (Transact-SQL)
+
+/*
+	创建新数据类型
+*/
+-- Create a birthday datetype that allows nulls.
+CREATE TYPE birthday
+FROM datetime NULL
+GO
+-- Create a table using the new data type.
+CREATE TABLE employee (emp_id char(5), emp_first_name char(30), emp_last_name char(40), emp_birthday birthday)
