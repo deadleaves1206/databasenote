@@ -1,0 +1,108 @@
+---------------------------文件内容主要是关于SQL Server中函数的使用--------------------
+/*
+	聚集函数见SELECT.TXT
+*/
+--一、字符串函数 
+----1、用来寻找一个字符串在另一个字符串中的起始位置
+CHARINDEX ( expression1 ,expression2 [ , start_location ] )
+		/*
+		expression1 
+		包含要查找的序列的字符表达式。expression1 最大长度限制为 8000 个字符。
+
+		expression2 
+		要搜索的字符表达式。
+
+		start_location 
+		表示搜索起始位置的整数或 bigint 表达式。
+		如果未指定 start_location，或者 start_location 为负数或 0，
+		则将从 expression2 的开头开始搜索。
+		*/
+----2、计算字符串长度
+LEN(character_expression)
+		/*
+		character_expression 
+		要处理的表达式。
+		*/
+----3、返回将大写字符转换为小写字符后得到的字符表达式
+LOWER(character_expression)
+----4、返回将小写字符转换为大写字符后得到的字符表达式
+UPPER(character_expression)
+----5、返回删除了空格的字符表达式。
+LTRIM(character_expression) --左侧
+RTRIM(character_expression)	--右侧
+TRIM(character_expression)	--两侧
+----6、返回字符表达式中从起始位置到指定字符位置的部分
+LEFT ( character_expression , integer_expression )	--从左侧开始
+RIGHT ( character_expression , integer_expression )	--从右侧开始
+		/*
+		integer_expression 
+		正整数，指定 character_expression 将返回的字符数。
+		如果 integer_expression 为负，则将返回错误。
+
+		如果 integer_expression 的数据类型为 bigint 且包含一个较大值，
+		character_expression 必须是大型数据类型，如 varchar(max)。
+		*/
+----7、将表达式中的一个字符串替换为另一个字符串或空字符串后，返回一个字符表达式
+REPLACE(character_expression,searchstring,replacementstring)
+		/*
+		searchstring 
+		是函数尝试定位的有效字符表达式。
+		replacementstring 
+		是用作替换表达式的有效字符表达式。
+		*/
+----8、将字符串插入另一字符串。它在第一个字符串中从开始位置删除指定长度的字符；
+	-- 然后将第二个字符串插入第一个字符串的开始位置。
+STUFF ( character_expression , start , length ,character_expression )
+		/*
+		start 
+		一个整数值，指定删除和插入的开始位置。
+		如果 start 或 length 为负，则返回空字符串。
+		如果 start 比第一个 character_expression 长，则返回空字符串。
+		start 可以是 bigint 类型。
+		length 
+		一个整数，指定要删除的字符数。
+		如果 length 比第一个 character_expression 长，则最多删除到最后一个 character_expression 中的最后一个字符。
+		length 可以是 bigint 类型。
+		*/
+--二、日期函数
+----1、返回当前数据库系统时间戳，返回值的类型为 datetime，并且不含数据库时区偏移量。
+	--此值得自运行 SQL Server 实例的计算机的操作系统。
+GETDATE ( )
+----2、将表示日期或时间间隔的数值与日期中指定的日期部分相加后，返回一个新的 DT_DBTIMESTAMP 值。
+	--number 参数的值必须为整数，而 date 参数的取值必须为有效日期。
+DATEADD(datepart, number, date)
+		/*
+		datepart 
+		指定要与数值相加的日期部分的参数。
+		日期部分  缩写  
+		Year		 	yy、yyyy
+ 		Quarter			qq、q
+ 		Month			mm、m
+ 		Dayofyear		dy、y
+ 		Day 			dd、d
+ 		Week
+ wk、ww
+ 
+Weekday
+ dw、w
+ 
+Hour
+ Hh
+ 
+Minute
+ mi、n
+ 
+Second
+ ss、s
+ 
+Millisecond
+ Ms
+ 
+
+
+		number 
+		用于与 datepart 相加的值。该值必须是分析表达式时已知的整数值。
+
+		date 
+		返回有效日期或日期格式的字符串的表达式。
+		*/
