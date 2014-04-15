@@ -1,0 +1,67 @@
+-------------------------------简单创建一个数据库-------------------------
+--先判定是否存在该数据库
+----两种方法，第一种是先判定是否存在，若存在则删除后重建
+		--第二种方法是先判定是否存在，如果不存在则新建
+
+--1）如果存在，则删除数据库
+IF EXISTS
+(
+	SELECT * FROM sysdatabases
+		WHERE name = '数据库名称'
+)
+DROP DATABASE 数据库名称;
+GO
+
+CREATE DATABASE 数据库名称
+ON
+(<数据库存储文件相关设置>)
+LOG ON
+(<数据库日志存储文件相关设置>)
+
+--2）如果不存在，则直接新建
+IF NOT EXISTS
+(
+	SELECT * FROM sysdatabases
+		WHERE name = '数据库名称'
+)
+CREATE DATABASE 数据库名称
+ON
+(<数据库存储文件相关设置>)
+LOG ON
+(<数据库日志存储文件相关设置>)
+
+
+<数据库存储文件相关设置> ::=
+	NAME = '数据库存储文件的逻辑名称',
+	FILENAME = '数据库存储文件的物理名称',
+	SIZE = 数据库大小（数字，可带单位，例如：10MB），无单位默认为MB
+	FILEGROWTH = 增长（可以为大小，例如：1MB；也可以为百分率，例如：10%），无单位默认为MB
+
+<数据库日志存储文件相关设置> ::=
+	NAME = '数据库日志存储文件的逻辑名称',
+	FILENAME = '数据库日志存储文件的物理名称',
+	SIZE = 数据库日志大小（数字，可带单位，例如：10MB），无单位默认为MB
+	FILEGROWTH = 增长（可以为大小，例如：1MB；也可以为百分率，例如：10%），无单位默认为MB
+
+--例子
+create database book
+on
+(
+   name='book_mdf',
+   filename='d:\book_mdf.mdf',
+   size=2,
+   filegrowth=3
+)
+log on
+( 
+   name='book_ldf',
+   filename='d:\book_ldf.ldf',
+   size=2,
+   filegrowth=3
+
+)
+go
+
+--打开数据库
+
+use book
