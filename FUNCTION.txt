@@ -4,7 +4,7 @@
 */
 --一、字符串函数 
 ----1、用来寻找一个字符串在另一个字符串中的起始位置
-CHARINDEX ( expression1 ,expression2 [ , start_location ] )
+CHARINDEX (expression1 ,expression2 [ , start_location ])
 		/*
 		expression1 
 		包含要查找的序列的字符表达式。expression1 最大长度限制为 8000 个字符。
@@ -32,8 +32,8 @@ LTRIM(character_expression) --左侧
 RTRIM(character_expression)	--右侧
 TRIM(character_expression)	--两侧
 ----6、返回字符表达式中从起始位置到指定字符位置的部分
-LEFT ( character_expression , integer_expression )	--从左侧开始
-RIGHT ( character_expression , integer_expression )	--从右侧开始
+LEFT (character_expression , integer_expression)	--从左侧开始
+RIGHT (character_expression , integer_expression)	--从右侧开始
 		/*
 		integer_expression 
 		正整数，指定 character_expression 将返回的字符数。
@@ -52,7 +52,7 @@ REPLACE(character_expression,searchstring,replacementstring)
 		*/
 ----8、将字符串插入另一字符串。它在第一个字符串中从开始位置删除指定长度的字符；
 	-- 然后将第二个字符串插入第一个字符串的开始位置。
-STUFF ( character_expression , start , length ,character_expression )
+STUFF (character_expression , start , length ,character_expression)
 		/*
 		start 
 		一个整数值，指定删除和插入的开始位置。
@@ -64,6 +64,23 @@ STUFF ( character_expression , start , length ,character_expression )
 		如果 length 比第一个 character_expression 长，则最多删除到最后一个 character_expression 中的最后一个字符。
 		length 可以是 bigint 类型。
 		*/
+----9、返回字符表达式、二进制表达式、文本表达式或图像表达式的一部分
+SUBSTRING(value_expression ,start_expression , length_expression)
+		/*
+		value_expression 
+		 是 character、binary、text、ntext 或 image 表达式。
+		 
+		start_expression 
+		 指定返回字符的起始位置的整数或 bigint 表达式。如果 start_expression 小于 0，会生成错误并终止语句。
+		 如果 start_expression 大于值表达式中的字符数，将返回一个零长度的表达式。
+		 
+		length_expression 
+		 是正整数或指定要返回的 value_expression 的字符数的 bigint 表达式。
+		 如果 length_expression 是负数，会生成错误并终止语句。
+		 如果 start_expression 与 length_expression 的总和大于 value_expression 中的字符数，则返回整个值表达式。
+		*/
+
+
 --二、日期函数
 ----1、返回当前数据库系统时间戳，返回值的类型为 datetime，并且不含数据库时区偏移量。
 	--此值得自运行 SQL Server 实例的计算机的操作系统。
@@ -73,36 +90,102 @@ GETDATE ( )
 DATEADD(datepart, number, date)
 		/*
 		datepart 
-		指定要与数值相加的日期部分的参数。
-		日期部分  缩写  
-		Year		 	yy、yyyy
- 		Quarter			qq、q
- 		Month			mm、m
- 		Dayofyear		dy、y
- 		Day 			dd、d
- 		Week
- wk、ww
- 
-Weekday
- dw、w
- 
-Hour
- Hh
- 
-Minute
- mi、n
- 
-Second
- ss、s
- 
-Millisecond
- Ms
- 
-
+		 指定要与数值相加的日期部分的参数。
+		 日期部分  缩写  
+		 Year		 	yy、yyyy
+ 		 Quarter		qq、q
+ 		 Month			mm、m
+ 		 Dayofyear		dy、y
+ 		 Day 			dd、d
+ 		 Week 			wk、ww
+ 		 Weekday		dw、w
+ 		 Hour			Hh
+ 		 Minute			mi、n
+ 		 Second			ss、s
+ 		 Millisecond	Ms
 
 		number 
-		用于与 datepart 相加的值。该值必须是分析表达式时已知的整数值。
+		 用于与 datepart 相加的值。该值必须是分析表达式时已知的整数值。
 
 		date 
-		返回有效日期或日期格式的字符串的表达式。
+		 返回有效日期或日期格式的字符串的表达式。
+		*/
+----3、返回指定的 startdate 和 enddate 之间所跨的指定 datepart 边界的计数（带符号的整数）。
+DATEDIFF ( datepart , startdate , enddate )
+		/*
+		datepart 
+		 是指定所跨边界类型的 startdate 和 enddate 的一部分。同DATEADD函数中的datepart参数。
+		
+		startdate 
+		 是一个表达式，可以解析为 time、date、smalldatetime、datetime、datetime2 或 datetimeoffset 值。
+		 date 可以是表达式、列表达式、用户定义的变量或字符串文字。从 enddate 减去 startdate。
+		 为避免不确定性，请使用四位数年份。
+		
+		enddate 
+		 请参阅 startdate。
+		*/
+----4、返回表示指定 date 的指定 datepart 的字符串
+DATENAME ( datepart , date )
+		/*
+		datepart 
+		 是返回的 date 的一部分。同DATEADD函数中的datepart参数。
+
+		date 
+		 是一个表达式，可以解析为 time、date、smalldatetime、datetime、datetime2 或 datetimeoffset 值。
+		 date 可以是表达式、列表达式、用户定义的变量或字符串文字。
+		 为避免不确定性，请使用四位数年份。
+		*/
+----5、返回表示指定 date 的指定 datepart 的整数。
+DATEPART ( datepart , date )
+		/*
+		参数同DATENAME函数，只是返回值的类型不同：
+		 DATENAME返回的是字符串，对于月份的处理为英语字符串；
+		 DATEPART返回的是整数；
+		*/
+
+
+--三、其他常用函数
+----1、将一种数据类型的表达式转换为另一种数据类型的表达式。
+------Syntax for CAST:
+ CAST ( expression AS data_type [ (length ) ])
+
+------Syntax for CONVERT:
+ CONVERT ( data_type [ ( length ) ] , expression [ , style ] )
+
+		/*
+		expression 
+		 任何有效的表达式。
+
+		data_type 
+		 目标数据类型。这包括 xml、bigint 和 sql_variant。
+		 不能使用别名数据类型。有关可用数据类型的详细信息，请参阅数据类型 (Transact-SQL)。
+
+		length 
+		 指定目标数据类型长度的可选整数。默认值为 30。
+
+		style 
+		 指定 CONVERT 函数如何转换 expression 的整数表达式。
+		 如果样式为 NULL，则返回 NULL。该范围是由 data_type 确定的。
+		*/
+----2、返回用于表示任何表达式的字节数。
+DATALENGTH ( expression ) 
+		/*
+		参数
+		expression 
+		任何数据类型的表达式。
+
+		返回类型
+		如果 expression 的数据类型为 varchar(max)、nvarchar(max) 或 varbinary(max) 数据类型，则返回 bigint；
+		否则返回 int。
+		*/
+----3、返回工作站名。
+HOST_NAME ()
+----4、基于指定的标识号返回数据库用户名。
+USER_NAME ( [ id ] )
+		/*
+		id 
+		与数据库用户关联的标识号。id 的数据类型为 int。需要使用括号。
+		省略 id 时，则假定为当前上下文中的当前用户。
+		如果在 EXECUTE AS 语句之后调用 USER_NAME，但不指定 id，则 USER_NAME 将返回模拟用户的名称。
+		如果 Windows 主体通过某组中的成员身份访问数据库，则 USER_NAME 将返回 Windows 主体的名称，而不是该组的名称。
 		*/
