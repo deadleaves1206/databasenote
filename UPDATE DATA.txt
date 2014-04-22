@@ -48,6 +48,7 @@
 					SELECT 'bb', 13, 14 UNION
 					SELECT 'cc', 14, 12;
 				可以发现，只是在2的基础上，每一个SELECT子句的最后加一个UNION（最后一个不加）即可
+				4、语句中的SELECT子句可以用多表查询
 		*/
 --------二、删除
 	DELETE FROM <T>

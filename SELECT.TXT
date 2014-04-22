@@ -136,3 +136,110 @@ SELECT [ALL | DISTINCT] <选择序列>
 		INTO <新表名>
 		FROM <旧表名>
 	--只能复制数据和标识列，不能复制约束
+
+
+-----------多表查询
+---------多表查询需要先将多个表连接成一个虚拟的表
+/*连接分为两种，一种是内连接，一种是外连接*/
+
+-----内连接
+/*内连接也叫连接，是最早的一种连接，最早被称为普通连接或自然连接。
+内连接是从结果中删除其他被连接表中没有匹配行的所有行，所以内连接可能会丢失信息。*/
+--内连接的语法：
+SELECT [ALL | DISTINCT] <选择序列>
+FROM table1 [INNER] JOIN table2
+ON table1.column=table2.column
+
+
+-----外连接
+/*外连接则扩充了内连接的功能，会把内连接中删除表源中的一些保留下来。
+由于保留下来的行不同，把外连接分为左外连接、右外连接和全外连接这3种连接。*/
+-----1、左外连接
+/*左外连接保留了第一个表的所有行，但只包含第二个表与第一表匹配的行。
+第二个表相应的空行被放入NULL值。*/
+--左外连接的语法：
+SELECT [ALL | DISTINCT] <选择序列>
+FROM table1 LEFT JOIN table2
+ON table1.column=table2.column
+-----2．右外连接
+/*右外连接保留了第二个表的所有行，但只包含第一个表与第二个表匹配的行。
+第一个表相应空行被入NULL值。*/
+--右外连接的语法：
+SELECT [ALL | DISTINCT] <选择序列>
+FROM table1 RIGHT JOIN table2
+ON table1.column=table2.column
+-----3．全外连接
+/*全外连接会把两个表所有的行都显示在结果表中。*/
+--全外连接的语法：
+SELECT [ALL | DISTINCT] <选择序列>
+FROM table1 FULL JOIN table2
+ON table1.column=table2.column
+
+-----自连接
+/*
+自联接:自己和自己联接
+
+要将表重命名
+*/
+
+
+-----------子查询
+/*
+子查询 :
+
+可以放在select ,update ,delete语句当中.
+
+二个表以上使用子查询的规则:
+1:确定父查询(一般是显示的结果)
+2:条件是做为子查询
+3:找出二个表或多个表的公共字段
+*/
+-------1）IN引出的子查询
+<元组> [NOT] IN <子查询>
+/*
+其中，<元组>形如(<值表达式>, ... , <值表达式>)，
+并且当元组只有一个分量时，可以省略圆括号。
+当且仅当<元组>出现在<子查询>的结果中，<元组> IN <子查询>为真，
+而<元组> NOT IN <子查询> 为假。
+*/
+--例子：查询和王丽丽在同一个专业学习的女同学的学号和姓名
+SELECT Sno, Sname
+FROM Students
+WHERE Sex='女' AND Speciality IN
+	(
+	SELECT Speciality
+	FROM Students
+	WHERE Sname = '王丽丽'
+	);
+/*当子查询结果只有一行时，可以使用 = 代替 IN。*/
+
+-------2）集合的比较引出的子查询
+<值表达式> θ ALL | SOME | ANY <子查询>
+/*
+其中，<值表达式>通常是属性（也可以是变量）；
+θ是比较运算符(=、<>、<、>、<=、>=)；
+SOME 和 ANY 的含义相同（一般用SOME，因为ANY容易和英语单词any的意思混淆），
+当<子查询>的结果为单个值时，ALL、SOME和ANY可以省略。
+ALL：表示与<子查询>的所有结果相比较均满足θ。
+SOME：表示与<子查询>中某一个值满足比较结果θ
+需注意：= SOME 相当于 IN，但是 <> SOME 不等价于 NOT IN。
+*/
+
+-------3）存在量子引出的子查询
+EXISTS <子查询>
+/*
+其中，<子查询>的SELECT子句的形式为：SELECT *。EXISTS <子查询>为真，
+当且仅当<子查询>的结果非空（至少包含一个元组）。
+*/
+
+-------4）子查询导出表
+<子查询> AS <表名> (<列名>[, ... , N])
+/*
+其中，<表名>是结果表的名称，<列名>是结果表中每一列的名称。
+*/
+--例如：
+SELECT Cno, Avg_grad
+	FROM (SELECT Cno, AVG(Grade)
+			FROM SC
+			GROUP BY Cno) AS Course_avg_grade(Cno, Avg_grad)
+	WHERE Avg_grad > 85;
