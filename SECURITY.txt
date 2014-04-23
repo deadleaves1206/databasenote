@@ -1,0 +1,30 @@
+/*
+数据库登录验证二种身份验证
+1:windows
+2:sql server
+*/
+
+--创建windows帐号
+exec sp_grantlogin 'BCJY\xiaoqiang'
+
+--创建一个sql server 登录账号
+exec sp_addlogin 'laoming','123'
+
+--(3)授予xiaoqiang这个用户可以访问pubs数据库里的jobs表，
+并可以执行添加，删除，修改操作.
+*/
+exec sp_grantdbaccess 'BCJY\xiaoqiang'
+grant insert,delete,update on jobs to [BCJY\xiaoqiang]
+
+exec sp_grantdbaccess 'laoming'
+grant insert,delete,update on jobs to laoming
+
+
+(4)创建用户自定义角色，该角色是拒绝xiaoqiang这个
+用户无法对authors表进行添加，删除，修改操作。
+*/
+exec sp_addrole 'teacher'
+exec sp_addrolemember 'teacher','laoming'
+exec sp_addrolemember 'teacher',[BCJY\xiaoqiang]
+deny insert ,delete,update on authors to laoming
+/*

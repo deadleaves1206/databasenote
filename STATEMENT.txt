@@ -1,0 +1,292 @@
+-----------------------该文件内容包括：
+-----------------------1、变量
+-----------------------2、流程控制语句
+-----------------------3、事务
+-----------------------4、存储过程
+-----------------------5、触发器
+-----------一、变量
+/*
+变量分为：
+局部变量：
+局部变量必须以标记@作为前缀 ，如@age
+局部变量的使用也是先声明，再赋值 
+全局变量：
+全局变量必须以标记@@作为前缀，如@@version
+全局变量由系统定义和维护，我们只能读取，不能修改全局变量的值 
+*/
+
+-------全局变量
+--返回当前所用语言的名称。
+@@LANGUAGE
+--返回受上一语句影响的行数。如果行数大于 20 亿，请使用 ROWCOUNT_BIG。
+@@ROWCOUNT
+--返回运行 SQL Server 的本地服务器的名称。
+@@SERVERNAME
+--返回当前连接的活动事务数。
+@@TRANCOUNT
+--返回当前的 SQL Server 安装的版本、处理器体系结构、生成日期和操作系统。
+@@VERSION
+--返回执行的上一个 Transact-SQL 语句的错误号。
+@@ERROR
+--返回最后插入的标识值的系统函数。
+@@IDENTITY
+
+RAISERROR()
+/*
+生成错误消息并启动会话的错误处理。
+RAISERROR 可以引用 sys.messages 目录视图中存储的用户定义消息，也可以动态建立消息。
+该消息作为服务器错误消息返回到调用应用程序，或返回到 TRY…CATCH 构造的关联 CATCH 块。
+*/
+
+-------局部变量
+/*
+声明局部变量
+     DECLARE   @变量名  数据类型
+
+set 直接赋值
+select  一般是从表中选取值给变量
+*/
+
+-----------二、流程控制语句
+-------1）IF-ELSE语句
+--语法
+IF Boolean_expression 
+     { sql_statement | statement_block } 
+[ ELSE 
+     { sql_statement | statement_block } ] 
+		/*
+		Boolean_expression 
+		 返回 TRUE 或 FALSE 的表达式。
+		 如果布尔表达式中含有 SELECT 语句，则必须用括号将 SELECT 语句括起来。
+
+		{ sql_statement | statement_block } 
+		 任何 Transact-SQL 语句或用语句块定义的语句分组。
+		 除非使用语句块，否则 IF 或 ELSE 条件只能影响一个 Transact-SQL 语句的性能。
+		 若要定义语句块，请使用控制流关键字 BEGIN 和 END。
+		*/
+
+-------2）WHILE语句
+--语法
+WHILE Boolean_expression 
+     { sql_statement | statement_block } 
+     [ BREAK ] 
+     { sql_statement | statement_block } 
+     [ CONTINUE ] 
+     { sql_statement | statement_block } 
+		/*
+		Boolean_expression 
+		返回 TRUE 或 FALSE 的表达式。
+		如果布尔表达式中含有 SELECT 语句，则必须用括号将 SELECT 语句括起来。
+
+		{sql_statement | statement_block} 
+		Transact-SQL 语句或用语句块定义的语句分组。
+		若要定义语句块，请使用控制流关键字 BEGIN 和 END。
+
+		BREAK
+		导致从最内层的 WHILE 循环中退出。将执行出现在 END 关键字（循环结束的标记）后面的任何语句。
+
+		CONTINUE
+		使 WHILE 循环重新开始执行，忽略 CONTINUE 关键字后面的任何语句。
+		*/
+
+-------3）CASE-END语句（有两种）
+--语法
+----Simple CASE function: 
+CASE input_expression 
+     WHEN when_expression THEN result_expression 
+    [ ...n ] 
+     [ 
+    ELSE else_result_expression 
+     ] 
+END 
+----Searched CASE function:
+CASE
+     WHEN Boolean_expression THEN result_expression 
+    [ ...n ] 
+     [ 
+    ELSE else_result_expression 
+     ] 
+END
+		/*
+		input_expression 
+		使用简单 CASE 格式时所计算的表达式。input_expression 是任意有效的表达式。
+
+		WHEN when_expression
+		使用简单 CASE 格式时要与 input_expression 进行比较的简单表达式。
+		when_expression 是任意有效的表达式。
+		input_expression 及每个 when_expression 的数据类型必须相同或必须是隐式转换的数据类型。
+
+		n 
+		占位符，表明可以使用多个 WHEN when_expression THEN result_expression 子句
+		或多个 WHEN Boolean_expression THEN result_expression 子句。
+
+		THEN result_expression
+		当 input_expression = when_expression 计算结果为 TRUE，
+		或者 Boolean_expression 计算结果为 TRUE 时返回的表达式。
+		result expression 是任意有效的表达式。
+
+		ELSE else_result_expression
+		比较运算计算结果不为 TRUE 时返回的表达式。
+		如果忽略此参数且比较运算计算结果不为 TRUE，则 CASE 返回 NULL。
+		else_result_expression 是任意有效的表达式。
+		else_result_expression 及任何 result_expression 的数据类型必须相同或必须是隐式转换的数据类型。
+
+		WHEN Boolean_expression
+		使用 CASE 搜索格式时所计算的布尔表达式。Boolean_expression 是任意有效的布尔表达式。
+		*/
+
+-----------三、事务
+/*
+事务(TRANSACTION)是作为单个逻辑工作单元执行的一系列操作
+这些操作作为一个整体一起向系统提交，要么都执行、要么都不执行 
+事务是一个不可分割的工作逻辑单元
+事务特性：
+1）原子性
+ 事务是数据库的逻辑工作单元。事务的所有操作要么都全部成功的执行，要么一个也不被执行。
+2）一致性
+ 事务隔离执行时要保证数据库的一致性（即正确性）。
+ 也就是说，事务的执行结果必须使数据库从一个一致性状态转变到另一个一致性状态，
+ 但是事务内部无须保证一致性。
+3）隔离性
+ 一个事务的执行不能被其他事务干扰。也就是说，即使多个事务并发执行，
+ 任何事务的更新操作直到其成功提交，对其他事务都是不可见的。
+4）持久性
+ 一个事务完成后，它对数据库的改变必须是永久的，即使系统出现故障，
+ 它对数据库的更新也将永久有效。
+
+事务分类:
+1、自动提交事务 
+ 每条单独的语句都是一个事务。
+
+2、显式事务 
+ 每个事务均以 BEGIN TRANSACTION 语句显式开始，以 COMMIT 或 ROLLBACK 语句显式结束。
+
+3、隐式事务 
+ 在前一个事务完成时新事务隐式启动，但每个事务仍以 COMMIT 或 ROLLBACK 语句显式完成。
+*/
+
+------1）显示事务
+BEGIN TRANSACTION 
+/*--定义变量，用于累计事务执行过程中的错误--*/
+DECLARE @errorSum INT 
+SET @errorSum=0  --初始化为0，即无错误
+/*--转账：张三的账户少1000元，李四的账户多1000元*/
+UPDATE bank SET currentMoney=currentMoney-1000
+	WHERE customerName='张三'
+SET @errorSum=@errorSum+@@error
+UPDATE bank SET currentMoney=currentMoney+1000
+   WHERE customerName='李四'
+SET @errorSum=@errorSum+@@error  --累计是否有错误
+IF @errorSum<>0  --如果有错误
+	BEGIN
+		PRINT '交易失败，回滚事务'
+		ROLLBACK TRANSACTION 
+	END  
+ELSE
+	BEGIN
+		print '交易成功，提交事务，写入硬盘，永久的保存'
+		COMMIT TRANSACTION   
+	END
+GO
+PRINT '查看转账事务后的余额'
+SELECT * FROM bank  
+GO
+
+------2）回复到标记
+BEGIN TRAN
+UPDATE bank SET currentMoney=currentMoney+1000
+	WHERE customerName='张三'
+SAVE TRANSACTION StkOrdTrn
+UPDATE bank SET currentMoney=currentMoney+1000
+	WHERE customerName='李四'
+ROLLBACK TRAN stkordtrn
+COMMIT TRAN
+
+-----------四、存储过程
+/*
+存储过程（procedure）类似于C语言中的函数
+用来执行管理任务或应用复杂的业务规则
+存储过程可以带参数，也可以返回结果
+*/
+--系统存储过程
+sp_databases		--列出驻留在 SQL Server 2005 数据库引擎实例中的数据库
+					--或可以通过数据库网关访问的数据库
+
+sp_helpdb			--报告有关指定数据库或所有数据库的信息
+
+sp_renamedb			--更改数据库的名称
+
+sp_helptext			--显示用户定义规则的定义、默认值、未加密的 Transact-SQL 存储过程、
+					--用户定义 Transact-SQL 函数、触发器、计算列、CHECK 约束、
+					--视图或系统对象（如系统存储过程）。
+
+sp_tables   		--返回当前环境下可查询的对象的列表
+
+sp_columns			--回某个表列的信息
+
+sp_help 			--查看某个表的所有信息
+
+sp_helpconstraint 	--查看某个表的约束
+
+sp_helpindex 		--查看某个表的索引
+
+sp_stored_procedures--列出当前环境中的所有存储过程。
+
+--自定义存储过程
+CREATE PROC <存储过程名称>
+<参数名称> <数据类型> [OUTPUT]
+[, ... , <参数名称> <数据类型> [OUTPUT]]
+AS
+<SQL语句 | SQL语句块>
+/*
+ <参数名称> 是自定义参数，例：@PARA1
+ [OUTPUT] 如果有，表示是输出参数，如果没有，则是输入参数
+ 参数可以有多个（输出参数也一样）
+ 存储过程比函数的适用性更强，更加推荐使用存储过程。
+*/
+
+--执行存储过程
+[EXEC] <存储过程名称> <参数值列表>
+/*
+ <参数列表>要按照定义存储过程时的参数顺序赋值，输出参数后要加[OUTPUT]。
+ 如果不按照参数定义顺序，需要指明参数值应该赋给哪个参数
+*/
+<参数值列表> ::=
+	@TEMP1 [OUTPUT], ... , @TEMPN [OUTPUT]
+	或 @PARA1=@TEMP1 [OUTPUT], ... , @PARAN=@TEMPN [OUTPUT]
+
+-----------五、触发器
+/*
+触发器是在对表进行插入、更新或删除操作时自动执行的存储过程
+触发器通常用于强制业务规则
+触发器是一种高级约束，可以定义比用CHECK 约束更为复杂的约束 
+可执行复杂的SQL语句（if/while/case）
+可引用其它表中的列 
+*/
+/*
+触发器定义在特定的表上，与表相关
+自动触发执行
+不能直接调用
+是一个事务（可回滚）
+*/
+/*
+DELETE 触发器
+INSERT 触发器
+UPDATE 触发器
+instead of视图.在视图上创建触发器
+*/
+/*
+CREATE TRIGGER trigger_name
+ ON table_name
+ [WITH ENCRYPTION]
+  FOR [DELETE, INSERT, UPDATE]
+ AS 
+  T-SQL语句
+GO
+*/
+/*
+INSERTED表：插入前数据存储表
+DELETED表：删除前数据存储表
+更新的过程可以看做是先删除，再插入。因此INSERTED表在更新中存入的是更新后的新数据，
+而DELETED表中存入的是更新后的新数据。
+*/
